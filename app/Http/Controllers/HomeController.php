@@ -8,6 +8,7 @@ use App\Models\Courier;
 use App\Models\ProductReview;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -80,6 +81,17 @@ class HomeController extends Controller
             'review'    => $review,
         ];
         return view('contents.frontend.produk', $data);
+    }
+
+    public function markNotifications()
+    {
+        $userNotifications = Auth::user()->notifications->whereNull('read_at');
+        foreach($userNotifications as $data){
+            $data->update([
+                'read_at' => now()
+            ]);
+        }
+        return redirect()->back();
     }
 
 

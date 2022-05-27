@@ -33,6 +33,8 @@ Route::get('cart/add-{id}', [App\Http\Controllers\CartController::class, 'add'])
 Route::get('checkout', [App\Http\Controllers\TransaksiController::class, 'checkout'])->name('checkout');
 Route::post('checkout/confirm', [App\Http\Controllers\TransaksiController::class, 'store'])->name('checkout.confirm');
 Route::post('buy_now/confirm/{id}', [App\Http\Controllers\TransaksiController::class, 'buy_now_store'])->name('buy_now.confirm');
+Route::get('/markNotifUser', [App\Http\Controllers\HomeController::class, 'markNotifications'])->name('user.mark-notifications');
+
 
 //my list transaksi
 Route::get('myTransaksi', [App\Http\Controllers\TransaksiController::class, 'index'])->name('transaksi.index');
@@ -57,6 +59,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::get('/', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
     Route::get('/product-review/{id}', [App\Http\Controllers\AdminController::class, 'product_reviews'])->name('admin.review');
     Route::post('/product-review/{id}/submit', [App\Http\Controllers\AdminController::class, 'review_store'])->name('admin.review.store');
+    Route::get('/markNotifAdmin', [App\Http\Controllers\AdminController::class, 'markNotifications'])->name('admin.mark-notifications');
     // route produk
     Route::prefix('produk')->group(function () {
         Route::get('/', [App\Http\Controllers\AdminController::class, 'produk'])->name('admin.produk');

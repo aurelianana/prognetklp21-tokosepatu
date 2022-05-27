@@ -45,6 +45,37 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
                         @if (!empty(auth()->user()->id))
+                        <li class="nav-item dropdown" >
+                            <a class="nav-link" href="#" type="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="notif">
+                                <i class="far fa-bell"></i>
+                                @if (Auth::guard('admin')->user()->notifications->where('read_at',null)->count() != null)
+                                    <span class="badge bg-primary navbar-badge">{{Auth::guard('admin')->user()->notifications->where('read_at',null)->count() }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="notif">
+                                <span class="dropdown-item">User Notifications</span>
+                                @forelse (Auth::guard('admin')->user()->notifications->where('read_at',null) as $data)
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item">
+                                        {{$data->data}}
+                                        <div class="my-2">
+                                            <span class="text-muted text-sm">{{$data->created_at->diffForHumans()}}</span>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item">
+                                        Belum Terdapat Notifikasi
+                                    </a>
+                                @endforelse
+                                @if (Auth::guard('admin')->user()->notifications->where('read_at',null)->count() != 0)
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{{route('admin.mark-notifications')}}" class="dropdown-item dropdown-footer">Baca Semua Notifications</a>
+                                @endif
+
+                            </div>
+                        </li>
                             <li class="nav-item">
                                 <a class="nav-link active" aria-current="page"
                                     href="{{ route('admin.index') }}">Dashboard</a>
@@ -66,6 +97,8 @@
                                     href="{{ route('admin.transaksi.index') }}">Data
                                     Transaksi</a>
                             </li>
+                            
+                            
                         @endif
                         <!-- Authentication Links -->
                         @guest

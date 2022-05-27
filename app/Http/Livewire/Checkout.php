@@ -44,8 +44,8 @@ class Checkout extends Component
                     $this->total_weight=0;
                     $temp_city = City::where('title','=',$this->input_region)->first();
                     foreach($this->cart as $dd){
-                     $this->subtotal=$this->subtotal+($dd->product->price*$dd->qty);
-                     $this->total_weight=$this->total_weight+$dd->product->weight*$dd->qty;
+                     $this->subtotal=($dd->product->price*$dd->qty);
+                     $this->total_weight=$dd->product->weight*$dd->qty;
                     }
                     $temp_courier = Courier::find($this->input_kurir);
                     $getCost = $client->request('POST', $url, 
@@ -71,8 +71,6 @@ class Checkout extends Component
                             $this->etd = $row['cost'][0]['etd'];
                         }
                     }
-                
-                
             }
         }
 

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\User;
+use App\Notifications\UserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class TransaksiAdminController extends Controller
 {
@@ -31,6 +33,11 @@ class TransaksiAdminController extends Controller
             'status' => 'verified'
         ]);
 
+        $user = User::find($transaction->user_id);
+        $message = "Hallo ".$user->name.", transaksi dengan ID : ".$transaction->id. " sudah dikonfirmasi oleh Pihak Toko";
+
+        Notification::send($user, new UserNotification($message));
+
 
         return redirect()->route('admin.transaksi.index')->with('success', 'Transaction has been accepted');
     }
@@ -41,6 +48,11 @@ class TransaksiAdminController extends Controller
             'status' => 'delivered'
         ]);
 
+        $user = User::find($transaction->user_id);
+        $message = "Hallo ".$user->name.", transaksi dengan ID : ".$transaction->id. " sedang dikirim oleh Pihak Toko";
+
+        Notification::send($user, new UserNotification($message));
+
         return redirect()->route('admin.transaksi.index')->with('success', 'Transaction has been shipped');
     }
 
@@ -50,6 +62,12 @@ class TransaksiAdminController extends Controller
         $transaction->update([
             'status' => 'canceled'
         ]);
+
+        $user = User::find($transaction->user_id);
+        $message = "Hallo ".$user->name.", transaksi dengan ID : ".$transaction->id. " telah dibatalkan oleh Pihak Toko";
+
+        Notification::send($user, new UserNotification($message));
+
         return redirect()->route('admin.transaksi.index')->with('success', 'Transaction has been cancelled');
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -10,8 +11,11 @@ use App\Models\TransactionDetail;
 use App\Models\Cart;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ProductReview;
+use App\Notifications\AdminNotification;
 use Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Notification;
 
 class TransaksiController extends Controller
 {
@@ -41,6 +45,14 @@ class TransaksiController extends Controller
         $transaksi = Transaction::where('id', '=', $id)->first();
         $transaksi->proof_of_payment = $name;
         $transaksi->update();
+
+        $user = FacadesAuth::user();
+        $admin = FacadesAuth::guard('admin')->user();
+        $dataAdmin = Admin::all();
+        foreach($dataAdmin as $admin){
+            $message = "Hallo ".$admin->username." user dengan nama ".$user->name." telah berhasil mengupload bukti pembayaran dari Transaksi : ".$transaksi->id;
+            Notification::send($admin, new AdminNotification($message));
+        }
 
         Storage::disk('asset')->put('assets/images/' . $name, file_get_contents($request->file('gambar')));
 
@@ -72,9 +84,18 @@ class TransaksiController extends Controller
                     $k++;
                 }
                 $j++;
+                $user = FacadesAuth::user();
+                $admin = FacadesAuth::guard('admin')->user();
+                $dataAdmin = Admin::all();
+                $product = Product::find($pp);
+                foreach($dataAdmin as $admin){
+                    $message = "Hallo ".$admin->username.", user dengan nama ".$user->name." memberikan review terhadap product : ".$product->product_name;
+                    Notification::send($admin, new AdminNotification($message));
+                }
             }
             $i++;
         }
+
         return back();
     }
 
@@ -137,6 +158,14 @@ class TransaksiController extends Controller
                 ->update([
                     'status' => 'checkedout'
                 ]);
+        }
+
+        $user = FacadesAuth::user();
+        $admin = FacadesAuth::guard('admin')->user();
+        $dataAdmin = Admin::all();
+        foreach($dataAdmin as $admin){
+            $message = "Hallo ".$admin->username.", terdapat transaksi baru dari user dengan nama : ".$user->name;
+            Notification::send($admin, new AdminNotification($message));
         }
 
 

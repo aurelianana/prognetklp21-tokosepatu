@@ -45,6 +45,10 @@ class Product extends Model
         return $this->hasMany(Cart::class);
     }
 
+    public function response()
+    {
+        return $this->hasOne(Response::class, 'review_id');
+    }
 
     public function transaction_detail()
     {

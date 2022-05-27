@@ -63,6 +63,40 @@
                             <i class="fas fa-shopping-cart"></i>
                         </a>
                     </li>
+                    @auth
+                    <div class="d-navbar-mini-cart navbar-nav animate-dropdown nav pull-right flip">
+                        <li class="nav-item dropdown" >
+                            <a class="nav-link" data-toggle="dropdown" href="#">
+                                <i class="far fa-bell"></i>
+                                @if (Auth::user()->notifications->where('read_at',null)->count() != null)
+                                    <span class="badge badge-primary navbar-badge">{{Auth::user()->notifications->where('read_at',null)->count() }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" >
+                                <span class="dropdown-item dropdown-header p-2 ml-2">User Notifications</span>
+                                @forelse (Auth::user()->notifications->where('read_at',null) as $data)
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item">
+                                        {{$data->data}}
+                                        <div class="my-2">
+                                            <span class="text-muted text-sm">{{$data->created_at->diffForHumans()}}</span>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="dropdown-divider"></div>
+                                    <a href="#" class="dropdown-item">
+                                        Belum Terdapat Notifikasi
+                                    </a>
+                                @endforelse
+                                @if (Auth::user()->notifications->where('read_at',null)->count() != 0)
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{{route('user.mark-notifications')}}" class="dropdown-item dropdown-footer">Baca Semua Notifications</a>
+                                @endif
+
+                            </div>
+                        </li>
+                    </div>
+                @endauth
                     <li class="nav-item">
                         <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#ModalSearch"
                             tabindex="-1" aria-disabled="true">
