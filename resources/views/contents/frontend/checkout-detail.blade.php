@@ -81,27 +81,37 @@ $temp_shipping = 0;
                                 conditions</label>
                         </div>
 
-                        @if ($transaksi->proof_of_payment == null)
+                        @if ($transaksi->proof_of_payment == null && $transaksi->status != 'canceled')
                             <form action="{{ route('upload.pembayaran', $transaksi->id) }}" method="post"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="modal-body">
-                                    <input type="file" name="gambar" id="gambar" required>
+                                    <input type="file" name="gambar" id="gambar">
                                 </div>
+                                @error('gambar')
+                                    <div><span class="text-danger">*</span> Mohon upload bukti pembayaran</div>
+                                @enderror
                                 <div class="modal-footer">
                                     <button type="submit" class="place-order w-100">Upload Bukti Pembayaran</button>
-                                    @if ($transaksi->status == 'unverified')
-                                        <form action="" method="post" class="mt-5">
-                                            <button type="submit" class="place-order w-100 text-danger">Batalkan
-                                                Pesanan</button>
-                                        </form>
-                                    @endif
+
                                 </div>
                             </form>
+                            @if ($transaksi->status == 'unverified')
+                                <form action="{{ route('transaksi.cancel', $transaksi->id) }}" id="cancel-order"
+                                    method="post" class="modal-footer">
+                                    @csrf
+                                    <button type="button" onclick="document.getElementById('cancel-order').submit()"
+                                        class="place-order w-100 text-danger">Batalkan
+                                        Pesanan</button>
+                                </form>
+                            @endif
+                        @elseif( $transaksi->status == 'canceled')
+                            <button type="submit" class="place-order w-100">Anda telah membatalkan pesanan ini</button>
                         @else
-                            <button type="submit" class="place-order w-100">Anda telah melakukan upload bukti
-                                pembayaran</button>
+                        <button type="submit" class="place-order w-100">Anda telah melakukan upload bukti
+                            pembayaran</button>
                         @endif
+
 
                         <div>
                             {{-- make transaction status heading if else --}}
@@ -118,12 +128,13 @@ $temp_shipping = 0;
                             @elseif ($transaksi->status == 'delivered')
                                 <h5>Status Pembayaran : <span class="badge badge-danger">Delivered</span></h5>
                             @endif
-
-
                         </div>
 
+
+
                         @if ($transaksi->status == 'delivered')
-                            <form action="{{ route('transaksi.success', $transaksi->id) }}" method="post" class="mt-5">
+                            <form action="{{ route('transaksi.success', $transaksi->id) }}" method="post"
+                                class="mt-5">
                                 @csrf
                                 <button type="submit" class="place-order w-100 btn btn-primary">Saya sudah menerima
                                     transaksi ini</button>

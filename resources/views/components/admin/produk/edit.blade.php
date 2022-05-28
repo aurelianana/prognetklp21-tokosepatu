@@ -9,7 +9,7 @@
             <label for="">Kategori</label>
             <select class="form-select" name="id_kategori" required>
                 @foreach($kategori as $r)
-                <option value="{{ $r->id }}" {{ $product->id_kategori == $r->id ? 'selected' : ''}}>{{ $r->category_name }}</option>
+                <option value="{{ $r->id }}" {{ $product->categories[0]->pivot->category_id == $r->id ? 'selected' : ''}}>{{ $r->category_name }}</option>
                 @endforeach
             </select>
             @error("id_kategori")

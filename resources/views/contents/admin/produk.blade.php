@@ -3,6 +3,24 @@
     <div class="container">
         <!-- Button trigger modal -->
         {{-- {{ alertbs_form($errors) }} --}}
+        @if(session('failed'))    
+        <div class="alert alert-danger">
+            <p><strong>Opps Something went wrong</strong></p>
+            <ul>
+                {{ $message }}
+            </ul>
+        </div>
+        @endif
+        {{-- @if ($errors->any())
+            <div class="alert alert-danger">
+                <p><strong>Opps Something went wrong</strong></p>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif --}}
         <button type="button" class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#modelIdPlus">
             <i class="fas fa-plus mr-1"></i> Produk
         </button>

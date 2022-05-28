@@ -53,7 +53,10 @@
                     @endforeach
                     <li class="nav-item">
                         @if (isset(auth()->user()->name))
-                            <a class="nav-link active bg-primary text-white" href="{{ url('admin') }}">Dashboard</a>
+                            <form action="{{ route('logout') }}" method="post" id="form-logout">
+                                @csrf
+                                <a class="nav-link bg-primary text-white" href="#" onclick="document.getElementById('form-logout').submit()">Logout</a>
+                            </form>
                         @else
                             <a class="nav-link active" href="{{ url('login') }}">Login</a>
                         @endif

@@ -20,6 +20,14 @@ use Illuminate\Support\Facades\Notification;
 class TransaksiController extends Controller
 {
 
+    public function index()
+    {
+        $title = "Kelompok 21 - Toko Sepatu";
+        $kategori = ProductCategory::all();
+        $transactions = Transaction::with('transaction_details', 'transaction_details.product')->orderBy('created_at', 'DESC')->paginate(5);
+        return view('contents.frontend.transaksi')->with(compact('transactions', 'title', 'kategori'));
+    }
+
     public function detail($id)
     {
         $title = "Kelompok 21 - Toko Sepatu";
@@ -38,8 +46,21 @@ class TransaksiController extends Controller
         return redirect()->back();
     }
 
+    public function cancel($id)
+    {
+        $transaction = Transaction::find($id);
+        $transaction->update([
+            'status' => 'canceled'
+        ]);
+        return redirect()->back();
+    }
+
     public function upload_pembayaran($id, Request $request)
     {
+        $request->validate([
+            'gambar' => 'required'
+        ]);
+        
         $gambar = $request->gambar;
         $name = 'produk_' . time() . '.' . $gambar->getClientOriginalExtension();
         $transaksi = Transaction::where('id', '=', $id)->first();

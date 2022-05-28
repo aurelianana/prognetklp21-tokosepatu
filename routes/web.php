@@ -40,6 +40,7 @@ Route::get('/markNotifUser', [App\Http\Controllers\HomeController::class, 'markN
 Route::get('myTransaksi', [App\Http\Controllers\TransaksiController::class, 'index'])->name('transaksi.index');
 Route::get('myTransaksi/{id}', [App\Http\Controllers\TransaksiController::class, 'detail'])->name('transaksi.detail');
 Route::post('myTransaksi/success/{id}', [App\Http\Controllers\TransaksiController::class, 'success'])->name('transaksi.success');
+Route::post('myTransaksi/cancel/{id}', [App\Http\Controllers\TransaksiController::class, 'cancel'])->name('transaksi.cancel');
 Route::post('upload-pembayaran-{id}', [App\Http\Controllers\TransaksiController::class, 'upload_pembayaran'])->name('upload.pembayaran');
 Route::post('upload-review-{id}', [App\Http\Controllers\TransaksiController::class, 'upload_review_user'])->name('upload.review.user');
 

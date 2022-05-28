@@ -13,7 +13,9 @@ use App\Models\User;
 use App\Models\Courier;
 use App\Models\ProductReview;
 use App\Models\Response;
+use App\Models\Transaction;
 use App\Notifications\UserNotification;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 
@@ -25,13 +27,63 @@ class AdminController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $data = [
-            'title' => 'Admin Toko'
-        ];
-        return view('contents.admin.home', $data);
+        $totalTransaction = Transaction::where('status', 'success')->count();
+
+        $transactionByMonth = Transaction::where('status', 'success')->whereMonth('created_at', Carbon::now()->month)->whereYear('created_at', Carbon::now()->year)->when(isset($request->bulan), function($data) use($request){
+            $data->whereMonth('created_at', $request->bulan);
+        })->get();
+
+        $transactionByYear = Transaction::where('status', 'success')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($data) use($request){
+            $data->whereYear('created_at', $request->tahun);
+        })->get();
+
+        // dd($transactionByMonth);
+        
+        $january = Transaction::where('status', 'success')->whereMonth('created_at', '01')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $february = Transaction::where('status', 'success')->whereMonth('created_at', '02')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $march = Transaction::where('status', 'success')->whereMonth('created_at', '03')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $april = Transaction::where('status', 'success')->whereMonth('created_at', '04')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $may = Transaction::where('status', 'success')->whereMonth('created_at', '05')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $june = Transaction::where('status', 'success')->whereMonth('created_at', '06')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $july = Transaction::where('status', 'success')->whereMonth('created_at', '07')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $august = Transaction::where('status', 'success')->whereMonth('created_at', '08')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $september = Transaction::where('status', 'success')->whereMonth('created_at', '09')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $october = Transaction::where('status', 'success')->whereMonth('created_at', '10')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $november = Transaction::where('status', 'success')->whereMonth('created_at', '11')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $december = Transaction::where('status', 'success')->whereMonth('created_at', '12')->whereYear('created_at', Carbon::now()->year)->when(isset($request->tahun), function($query) use ($request){
+            $query->whereYear('created_at', $request->tahun);
+        })->count();
+        $title = 'Admin Toko';
+
+        
+        return view('contents.admin.home',  compact('totalTransaction', 'transactionByMonth', 'transactionByYear','january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'title'));
     }
+
+    
 
     // produk
     public function produk(Request $request)
@@ -120,6 +172,7 @@ class AdminController extends Controller
     //UPDATE PRODUK
     public function update_produk(Request $request)
     {
+        // dd($request->all());
         $validator = \Validator::make($request->all(), [
             "id"            => "required",
             "id_kategori"   => "required",
@@ -138,9 +191,12 @@ class AdminController extends Controller
                     $image = $request->file('gambar');
                     $input['imagename'] = 'produk_' . time() . '.' . $image->getClientOriginalExtension();
 
-                    $destinationPath = storage_path('public/assets/img');
+                    $destinationPath = public_path('/images');
                     $image->move($destinationPath, $input['imagename']);
                     $gambar = $input['imagename'];
+                    ProductImage::where('product_id', $request->id)->update([
+                        'image_name' => "/images/".$gambar
+                    ]);
                 } else {
                     return redirect()->back()->withErrors($validator)->with("failed", " Gagal Update Data ! ");
                 }
@@ -148,12 +204,14 @@ class AdminController extends Controller
                 $gambar = $produkdb->gambar;
             }
 
+            ProductCategoryDetail::where('product_id', $request->id)->update([
+                'category_id' => $request->id_kategori
+            ]);
+
             $produkdb->update([
-                'id_kategori'   => $request->get("id_kategori"),
-                'gambar'        => $gambar,
-                'nama_produk'   => $request->get("nama_produk"),
-                'deskripsi'     => $request->get("deskripsi"),
-                'harga_jual'    => $request->get("harga_jual"),
+                'product_name'   => $request->get("nama_produk"),
+                'description'     => $request->get("deskripsi"),
+                'price'    => $request->get("harga_jual"),
                 'updated_at'    => date('Y-m-d H:i:s'),
             ]);
 
